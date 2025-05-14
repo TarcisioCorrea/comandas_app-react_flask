@@ -4,6 +4,8 @@ from datetime import timedelta
 import logging
 from settings import PROXY_PORT, PROXY_DEBUG, TEMPO_SESSION # carrega o arquivo .env, variáveis de ambiente
 
+from funcoes import Funcoes
+
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
 
@@ -20,20 +22,11 @@ def favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
-# gerando uma chave randômica para secret_key
-app.secret_key = os.urandom(12).hex()
-# configuração do tempo de expiração da sessão (em minutos), o padrão é 31 dias
-app.permanent_session_lifetime = timedelta(minutes=int(TEMPO_SESSION))
-# Configuração do SameSite para cookies
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-# Configuração para enviar cookies apenas em conexões HTTPS
-app.config['SESSION_COOKIE_SECURE'] = True
-
-# o decorador @app.before_request é chamado antes de cada requisição
-@app.before_request
-def before_request():
-    # renovar o tempo da sessão automaticamente conforme o usuário interage com a aplicação
-    session.permanent = True
+# rota somente para teste de comunicação com a API e geração do token
+# não é utilizada na aplicação, mas pode ser útil para verificar se a API está acessível
+@app.route('/api/teste_token', methods=['POST'])
+def teste_token():
+    return Funcoes.get_api_token()
 
 # ponto de entrada para execução
 if __name__ == '__main__':
